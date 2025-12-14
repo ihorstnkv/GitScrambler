@@ -1,0 +1,34 @@
+version: 1
+
+encryption:
+  algorithm: AES-GCM
+  scramble: true
+  filename_obfuscation: false
+
+profiles:
+  default:
+    rules:
+      - include: "src/**/*.py"
+        exclude:
+          - "src/main.py"
+          - "src/__init__.py"
+      - include: "config/**/*.yaml"
+        exclude:
+          - "config/public.yaml"
+
+  strict:
+    rules:
+      - include: "**/*"
+        exclude:
+          - "README.md"
+          - "LICENSE"
+          - ".git/**"
+          - ".encrypted_manifest.yml"
+          - "*.enc"
+
+  minimal:
+    rules:
+      - include: "secrets/**/*"
+        scramble: true
+        encrypt: true
+        chunk_size: 128
