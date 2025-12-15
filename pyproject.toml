@@ -1,56 +1,17 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "encryptor"
 version = "0.1.0"
-description = "A pre-commit tool that scrambles and encrypts repository content"
+description = "Pre-commit tool to scramble and encrypt repository content"
 readme = "README.md"
-requires-python = ">=3.9"
-license = {text = "Educational use only"}
-authors = [
-    {name = "Encryptor Team"}
-]
-keywords = ["encryption", "security", "git", "pre-commit", "scrambling"]
-
+requires-python = ">=3.10"
 dependencies = [
+    "pycryptodome>=3.20",
     "pyyaml>=6.0",
-    "cryptography>=41.0.0",
-]
-
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "black>=23.0.0",
-    "mypy>=1.0.0",
-    "ruff>=0.1.0",
 ]
 
 [project.scripts]
 encryptor = "encryptor.cli:main"
-
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["encryptor*"]
-
-[tool.black]
-line-length = 88
-target-version = ["py39"]
-
-[tool.ruff]
-line-length = 88
-target-version = "py39"
-
-[tool.mypy]
-python_version = "3.9"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = false
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]

@@ -12,49 +12,12 @@ Rules DO NOT perform actions. They only return decisions.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path, PurePath
+from pathlib import Path
 from typing import List, Optional
+import fnmatch
 
 from .manifest import RuleConfig
 from .config import DEFAULT_CHUNK_SIZE
-
-
-def matches_pattern(path: Path, pattern: str) -> bool:
-    """
-    Check if a path matches a glob pattern.
-
-    Supports ** for recursive matching.
-    """
-    # Convert to PurePath for consistent matching
-    pure_path = PurePath(path)
-
-    # Try matching with pathlib's match (works from right-to-left)
-    if pure_path.match(pattern):
-        return True
-
-    # For patterns with leading directories, also try full string match
-    # This handles cases like "src/**/*.py" properly
-    path_str = str(pure_path)
-    pattern_parts = pattern.split('/')
-    path_parts = path_str.split('/')
-
-    # Simple recursive matching
-    if '**' in pattern_parts:
-        idx = pattern_parts.index('**')
-        # Match prefix
-        if idx > 0:
-            prefix = '/'.join(pattern_parts[:idx])
-            if not path_str.startswith(prefix):
-                return False
-        # Match suffix
-        if idx < len(pattern_parts) - 1:
-            suffix_pattern = '/'.join(pattern_parts[idx+1:])
-            return pure_path.match(suffix_pattern)
-        return True
-
-    # Direct string comparison for simple patterns
-    import fnmatch
-    return fnmatch.fnmatch(path_str, pattern)
 
 
 @dataclass(frozen=True)
@@ -72,14 +35,13 @@ class RuleEngine:
 
     def evaluate(self, path: str | Path) -> RuleDecision:
         path = Path(path)
+        path_str = path.as_posix()
 
         for idx, rule in enumerate(self.rules):
-            # Check if path matches include pattern
-            if not matches_pattern(path, rule.include):
+            if not fnmatch.fnmatch(path_str, rule.include):
                 continue
 
-            # Check exclusions
-            if any(matches_pattern(path, pat) for pat in rule.exclude):
+            if any(fnmatch.fnmatch(path_str, pat) for pat in rule.exclude):
                 continue
 
             return RuleDecision(

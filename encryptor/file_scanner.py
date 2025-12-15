@@ -38,18 +38,10 @@ class FileScanner:
             if not path.is_file():
                 continue
 
-            # Convert to relative path for rule evaluation
-            try:
-                rel_path = path.relative_to(self.root)
-            except ValueError:
-                # Path is not relative to root, skip it
-                continue
-
-            decision = self.rule_engine.evaluate(rel_path)
+            decision = self.rule_engine.evaluate(path)
             if not decision.matched:
                 continue
 
-            # Yield absolute path but evaluated against relative
             yield path, decision
 
     def scan_text_files(self) -> Iterator[Tuple[Path, RuleDecision]]:

@@ -46,6 +46,10 @@ AES_TAG_SIZE: Final[int] = 16
 ENV_ENCRYPTION_KEY: Final[str] = "ENCRYPTION_KEY"
 ENV_MODE: Final[str] = "ENCRYPTOR_MODE"  # e.g. dev / prod
 
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
+
 
 def load_encryption_key() -> bytes:
     """

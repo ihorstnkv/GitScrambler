@@ -81,3 +81,4 @@ def is_binary_file(path: Path, sample_size: int = 1024) -> bool:
 def ensure_parent_dir(path: Path) -> None:
     """Ensure the parent directory of a file exists."""
     path.parent.mkdir(parents=True, exist_ok=True)
+
