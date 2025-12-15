@@ -15,6 +15,7 @@ profiles:
       - include: "config/**/*.yaml"
         exclude:
           - "config/public.yaml"
+          - "manifest.yml"
 
   strict:
     rules:
