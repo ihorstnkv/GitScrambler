@@ -194,7 +194,13 @@ def cmd_hide(ctx: CLIContext, args: argparse.Namespace) -> int:
     if not files_to_process:
         ctx.log(colored("No files to process", Colors.YELLOW))
         if ctx.verbose:
-            ctx.log(f"Hint: Run 'encryptor -m manifest.yml rules -v' to see file counts")
+            ctx.log(f"Hint: Run 'encryptor rules -v' to see file counts")
+
+        # Check if --fail-on-plaintext is set
+        if hasattr(args, 'fail_on_plaintext') and args.fail_on_plaintext:
+            # All matched files are already encrypted, this is good
+            ctx.log(colored("✓ No plaintext violations found", Colors.GREEN))
+
         return 0
 
     if ctx.dry_run:
@@ -261,6 +267,12 @@ def cmd_hide(ctx: CLIContext, args: argparse.Namespace) -> int:
     if ctx.dry_run:
         ctx.log(colored(f"[DRY RUN] Preview complete - no files were modified", Colors.YELLOW))
         ctx.log(f"Would process {processed_count} file(s)")
+
+        # Fail if plaintext violations found in dry-run mode
+        if hasattr(args, 'fail_on_plaintext') and args.fail_on_plaintext and processed_count > 0:
+            print_error(f"Plaintext violations detected: {processed_count} file(s) need encryption")
+            return 1
+
         return 0
 
     if failed_count > 0:
@@ -268,6 +280,14 @@ def cmd_hide(ctx: CLIContext, args: argparse.Namespace) -> int:
         return 1
     else:
         print_success(f"Successfully processed {processed_count} file(s)")
+
+        # If fail-on-plaintext flag was set and we processed files, it means
+        # there were plaintext files that shouldn't have been there
+        if hasattr(args, 'fail_on_plaintext') and args.fail_on_plaintext and processed_count > 0:
+            print_error(f"Pre-commit check failed: Found {processed_count} plaintext file(s) that should have been encrypted")
+            print_error("These files have now been encrypted. Please stage the .enc files and commit again.")
+            return 1
+
         return 0
 
 

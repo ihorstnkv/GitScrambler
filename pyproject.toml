@@ -17,6 +17,7 @@ keywords = ["encryption", "security", "git", "pre-commit", "scrambling"]
 dependencies = [
     "pyyaml>=6.0",
     "cryptography>=41.0.0",
+    "pre-commit>=3.0.0"
 ]
 
 [project.optional-dependencies]
@@ -26,6 +27,15 @@ dev = [
     "black>=23.0.0",
     "mypy>=1.0.0",
     "ruff>=0.1.0",
+]
+
+all = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "mypy>=1.0.0",
+    "ruff>=0.1.0",
+    "pre-commit>=3.0.0",
 ]
 
 [project.scripts]

@@ -1,0 +1,11 @@
+repos:
+  - repo: local
+    hooks:
+      - id: gitscrambler-hide
+        name: GitScrambler - Encrypt sensitive files
+        entry: encryptor hide --fail-on-plaintext
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+        verbose: true
