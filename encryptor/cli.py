@@ -161,15 +161,31 @@ def cmd_hide(ctx: CLIContext, args: argparse.Namespace) -> int:
     # Scan files
     scanner = FileScanner(root, rule_engine)
 
+    # ALWAYS show this for debugging
+    print(f"DEBUG: About to scan from {root}")
+    print(f"DEBUG: Verbose={ctx.verbose}")
+
     if args.staged_only:
         ctx.log_verbose("Processing only Git-staged files")
         # TODO: integrate with git to get staged files
         print_warning("--staged-only not yet implemented")
 
+    # Debug: show what we're scanning
+    ctx.log_verbose(f"Scanning directory: {root}")
+
     files_to_process = []
+    total_scanned = 0
+    total_matched = 0
+
     for file_path, decision in scanner.scan():
+        total_scanned += 1
+        print(f"DEBUG: Found {file_path}")  # ALWAYS print
+        ctx.log_verbose(f"Found file: {file_path} (matched={decision.matched})")
+
         if not decision.matched:
             continue
+
+        total_matched += 1
 
         # Skip if neither scramble nor encrypt
         if not decision.scramble and not decision.encrypt:
@@ -178,8 +194,13 @@ def cmd_hide(ctx: CLIContext, args: argparse.Namespace) -> int:
 
         files_to_process.append((file_path, decision))
 
+    print(f"DEBUG: Loop finished. total_scanned={total_scanned}, total_matched={total_matched}")
+    ctx.log_verbose(f"Scanned {total_scanned} files, {total_matched} matched rules")
+
     if not files_to_process:
         ctx.log(colored("No files to process", Colors.YELLOW))
+        if ctx.verbose:
+            ctx.log(f"Hint: Run 'encryptor -m manifest.yml rules -v' to see file counts")
         return 0
 
     if ctx.dry_run:
