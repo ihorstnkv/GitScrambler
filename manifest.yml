@@ -8,29 +8,27 @@ encryption:
 profiles:
   default:
     rules:
-      # Encrypt and scramble application secrets
-      - include: "src/**/secrets/*.py"
-        exclude:
-          - "src/**/secrets/example_*.py"
-        encrypt: true
-        scramble: true
-        chunk_size: 64
-
-      # Scramble only (no encryption) for configs
-      - include: "config/**/*.yml"
-        encrypt: false
-        scramble: true
-        chunk_size: 32
-
-      # Encrypt everything in private docs
-      - include: "docs/private/**"
-        encrypt: true
-        scramble: true
-
-  dev:
-    rules:
-      # Less aggressive rules for development
       - include: "src/**/*.py"
-        encrypt: false
+        exclude:
+          - "src/main.py"
+          - "src/__init__.py"
+      - include: "config/**/*.yaml"
+        exclude:
+          - "config/public.yaml"
+
+  strict:
+    rules:
+      - include: "**/*"
+        exclude:
+          - "README.md"
+          - "LICENSE"
+          - ".git/**"
+          - ".manifest.yml"
+          - "*.enc"
+
+  minimal:
+    rules:
+      - include: "secrets/**/*"
         scramble: true
+        encrypt: true
         chunk_size: 128

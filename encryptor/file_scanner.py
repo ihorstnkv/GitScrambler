@@ -34,13 +34,7 @@ class FileScanner:
             (Path, RuleDecision)
         """
 
-        print(f"DEBUG FileScanner: root={self.root}, exists={self.root.exists()}, is_dir={self.root.is_dir()}")
-
-        rglob_count = 0
         for path in self.root.rglob("*"):
-            rglob_count += 1
-            print(f"DEBUG FileScanner: rglob found {path}, is_file={path.is_file()}")
-
             if not path.is_file():
                 continue
 
@@ -49,19 +43,14 @@ class FileScanner:
                 rel_path = path.relative_to(self.root)
             except ValueError:
                 # Path is not relative to root, skip it
-                print(f"DEBUG FileScanner: Could not get relative path for {path}")
                 continue
 
             decision = self.rule_engine.evaluate(rel_path)
-            print(f"DEBUG FileScanner: Evaluated {rel_path}, matched={decision.matched}")
-
             if not decision.matched:
                 continue
 
             # Yield absolute path but evaluated against relative
             yield path, decision
-
-        print(f"DEBUG FileScanner: rglob found {rglob_count} total items")
 
     def scan_text_files(self) -> Iterator[Tuple[Path, RuleDecision]]:
         """
